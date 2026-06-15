@@ -1,23 +1,30 @@
 name: docker-codex-cli
 
+x-codex-base: &codex-base
+  build:
+    context: .
+    args:
+      CODEX_RELEASE: ${CODEX_RELEASE:-0.139.0}
+  image: ${CODEX_IMAGE:-codex-cli:local}
+  working_dir: /workspace
+  stdin_open: true
+  tty: true
+  environment:
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+    CODEX_AUTO_LOGIN: ${CODEX_AUTO_LOGIN:-1}
+  volumes:
+    - type: bind
+      source: ${WORKSPACE:-.}
+      target: /workspace
+    - type: bind
+      source: ${CODEX_HOME_HOST:-${HOME}/.codex}
+      target: /home/codex/.codex
+
 services:
   codex:
-    build:
-      context: .
-      args:
-        CODEX_RELEASE: ${CODEX_RELEASE:-0.139.0}
-    image: ${CODEX_IMAGE:-codex-cli:local}
-    working_dir: /workspace
-    stdin_open: true
-    tty: true
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
-      CODEX_AUTO_LOGIN: ${CODEX_AUTO_LOGIN:-1}
-    volumes:
-      - type: bind
-        source: ${WORKSPACE:-.}
-        target: /workspace
-      - type: bind
-        source: ${CODEX_HOME_HOST:-${HOME}/.codex}
-        target: /home/codex/.codex
+    <<: *codex-base
+
+  shell:
+    <<: *codex-base
+    command: bash

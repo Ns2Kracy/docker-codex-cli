@@ -57,6 +57,19 @@ Start an interactive Codex session:
 docker compose run --rm codex
 ```
 
+Start a shell when you want to change directories before launching Codex:
+
+```bash
+docker compose run --rm shell
+```
+
+Then run Codex from the directory you want:
+
+```bash
+cd path/inside/workspace
+codex
+```
+
 Run a one-off Codex command:
 
 ```bash
@@ -138,6 +151,8 @@ docker run -it --rm \
   -v "$PWD:/workspace" \
   codex-cli:local bash
 ```
+
+Inside the shell, `cd` to any directory under `/workspace`, then run `codex`.
 
 ## Adding Project Tooling
 
