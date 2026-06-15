@@ -40,7 +40,7 @@ docker run -it --rm \
   codex-cli:local
 ```
 
-When `OPENAI_API_KEY` is set and `/home/codex/.codex/auth.json` does not exist, the entrypoint tries `codex login --api-key` once before starting Codex. It also exposes the same value as `CODEX_API_KEY` for non-interactive `codex exec` runs. Disable the automatic login attempt with:
+When `OPENAI_API_KEY` is set and `/home/codex/.codex/auth.json` does not exist, the entrypoint tries `codex login --with-api-key` once before starting Codex. It also exposes the same value as `CODEX_API_KEY` for non-interactive `codex exec` runs. Disable the automatic login attempt with:
 
 ```bash
 -e CODEX_AUTO_LOGIN=0

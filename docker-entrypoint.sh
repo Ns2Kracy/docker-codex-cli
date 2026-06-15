@@ -26,10 +26,17 @@ is_auth_free_invocation() {
     --help|-h|--version|-V|completion|doctor|login|logout)
       return 0
       ;;
-    *)
-      return 1
-      ;;
   esac
+
+  for arg in "$@"; do
+    case "$arg" in
+      --help|-h)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
 }
 
 codex_config_arg() {
@@ -42,25 +49,25 @@ maybe_login_with_api_key() {
   [ -n "${OPENAI_API_KEY:-}" ] || return 0
   [ "${CODEX_AUTO_LOGIN:-1}" != "0" ] || return 0
   [ ! -f "$CODEX_HOME/auth.json" ] || return 0
-  is_auth_free_invocation "${1:-}" && return 0
+  is_auth_free_invocation "$@" && return 0
 
   config_arg="$(codex_config_arg)"
 
   if [ -n "$config_arg" ]; then
-    if printf '%s\n' "$OPENAI_API_KEY" | codex --config "$config_arg" login --api-key >/dev/null 2>&1; then
+    if printf '%s\n' "$OPENAI_API_KEY" | codex --config "$config_arg" login --with-api-key >/dev/null 2>&1; then
       return 0
     fi
   else
-    if printf '%s\n' "$OPENAI_API_KEY" | codex login --api-key >/dev/null 2>&1; then
+    if printf '%s\n' "$OPENAI_API_KEY" | codex login --with-api-key >/dev/null 2>&1; then
       return 0
     fi
   fi
 
-  warn 'OPENAI_API_KEY is set, but automatic `codex login --api-key` did not succeed; continuing with the environment unchanged.'
+  warn 'OPENAI_API_KEY is set, but automatic `codex login --with-api-key` did not succeed; continuing with the environment unchanged.'
 }
 
 run_codex() {
-  maybe_login_with_api_key "${1:-}"
+  maybe_login_with_api_key "$@"
 
   if [ -n "${OPENAI_API_KEY:-}" ] && [ -z "${CODEX_API_KEY:-}" ]; then
     export CODEX_API_KEY="$OPENAI_API_KEY"

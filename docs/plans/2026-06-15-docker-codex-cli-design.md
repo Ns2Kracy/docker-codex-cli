@@ -28,7 +28,7 @@ The container runs as an unprivileged `codex` user with `/workspace` as the defa
 - If the command starts with a Codex subcommand or flag, prepend `codex`.
 - If the command is another executable such as `sh` or `bash`, run it unchanged.
 - If `OPENAI_BASE_URL` is set, add `--config openai_base_url='"$OPENAI_BASE_URL"'` before user arguments.
-- If `OPENAI_API_KEY` is set and no file-based auth cache exists, try to persist API-key auth with `codex login --api-key` using non-interactive stdin. If the installed CLI does not support that exact flag shape, leave the variable untouched and continue so users can still run explicit login commands.
+- If `OPENAI_API_KEY` is set and no file-based auth cache exists, try to persist API-key auth with `codex login --with-api-key` using non-interactive stdin. If the installed CLI does not support that exact flag shape, leave the variable untouched and continue so users can still run explicit login commands.
 
 ## Files
 

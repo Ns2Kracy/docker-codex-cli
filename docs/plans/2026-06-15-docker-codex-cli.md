@@ -51,7 +51,7 @@ The script must:
 - Set `CODEX_HOME` to `/home/codex/.codex` when unset.
 - Create `$CODEX_HOME` and `/workspace` if possible.
 - Build a config argument list containing `--config openai_base_url='"$OPENAI_BASE_URL"'` when `OPENAI_BASE_URL` is set.
-- Try API-key login when `OPENAI_API_KEY` is set and `$CODEX_HOME/auth.json` does not exist.
+- Try API-key login with `codex login --with-api-key` when `OPENAI_API_KEY` is set and `$CODEX_HOME/auth.json` does not exist.
 - Start `codex` when no command is provided.
 - Prepend `codex` when the first argument is a Codex flag or known subcommand.
 - Execute non-Codex commands unchanged.

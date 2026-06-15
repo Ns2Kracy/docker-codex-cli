@@ -25,10 +25,10 @@ RUN apk add --no-cache ca-certificates git bash \
     && chown -R codex:codex /workspace /home/codex
 
 COPY --from=builder /opt/codex /opt/codex
-COPY --from=builder /usr/local/bin/codex /usr/local/bin/codex
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-RUN chmod 0755 /usr/local/bin/docker-entrypoint.sh
+RUN ln -s /opt/codex/packages/standalone/current/bin/codex /usr/local/bin/codex \
+    && chmod 0755 /usr/local/bin/docker-entrypoint.sh
 
 ENV HOME=/home/codex \
     CODEX_HOME=/home/codex/.codex
