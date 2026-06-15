@@ -43,6 +43,35 @@ docker run -it --rm \
   codex-cli:local
 ```
 
+## Docker Compose
+
+Build the image through Compose:
+
+```bash
+docker compose build
+```
+
+Start an interactive Codex session:
+
+```bash
+docker compose run --rm codex
+```
+
+Run a one-off Codex command:
+
+```bash
+docker compose run --rm codex --version
+```
+
+The Compose service mounts the current directory to `/workspace` and `${HOME}/.codex` to `/home/codex/.codex` by default. Override paths or release settings with environment variables:
+
+```bash
+WORKSPACE=/path/to/project \
+CODEX_HOME_HOST="$HOME/.codex" \
+CODEX_RELEASE=0.139.0 \
+docker compose run --rm codex
+```
+
 ## Run With API Key
 
 ```bash
