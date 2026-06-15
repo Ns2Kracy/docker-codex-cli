@@ -114,7 +114,7 @@ docker run -it --rm \
   codex-cli:local
 ```
 
-When `OPENAI_API_KEY` is set and `/home/codex/.codex/auth.json` does not exist, the entrypoint tries `codex login --with-api-key` once before starting Codex. It also exposes the same value as `CODEX_API_KEY` for non-interactive `codex exec` runs. Disable the automatic login attempt with:
+When `OPENAI_API_KEY` is set and `/home/codex/.codex/auth.json` does not exist, the container's `codex` command tries `codex login --with-api-key` once before starting Codex. It also exposes the same value as `CODEX_API_KEY` for non-interactive `codex exec` runs. Disable the automatic login attempt with:
 
 ```bash
 -e CODEX_AUTO_LOGIN=0
@@ -132,7 +132,7 @@ docker run -it --rm \
   codex-cli:local
 ```
 
-This does not rewrite your mounted `config.toml`.
+This does not rewrite your mounted `config.toml`. The container's `codex` command applies the override both when Codex starts directly and when you start a shell first, change directories, then run `codex` manually.
 
 ## Non-Interactive Example
 
@@ -153,6 +153,13 @@ docker run -it --rm \
 ```
 
 Inside the shell, `cd` to any directory under `/workspace`, then run `codex`.
+
+Check the runtime environment from inside Compose:
+
+```bash
+docker compose run --rm codex sh -lc 'printf "OPENAI_BASE_URL=%s\nCODEX_HOME=%s\n" "$OPENAI_BASE_URL" "$CODEX_HOME"'
+docker compose run --rm shell bash -lc 'printf "OPENAI_BASE_URL=%s\n" "$OPENAI_BASE_URL"'
+```
 
 ## Adding Project Tooling
 
