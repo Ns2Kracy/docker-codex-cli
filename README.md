@@ -72,6 +72,26 @@ CODEX_RELEASE=0.139.0 \
 docker compose run --rm codex
 ```
 
+## Publish Images
+
+The GitHub Actions workflow at `.github/workflows/publish-images.yml` publishes the image to both GHCR and Docker Hub on pushes to `main`, tags matching `v*`, or manual dispatch.
+
+Published image names:
+
+- `ghcr.io/<github-owner>/<github-repo>`
+- Docker Hub image from repository variable `DOCKERHUB_IMAGE`, or `<github-owner>/<github-repo>` when that variable is unset
+
+Required repository secrets:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+Optional repository variable:
+
+- `DOCKERHUB_IMAGE`, for example `ns2kracy/docker-codex-cli`
+
+The workflow publishes multi-architecture images for `linux/amd64` and `linux/arm64`. It uses `CODEX_RELEASE=0.139.0` by default. For a manual run, set the `codex_release` input to another version or `latest`.
+
 ## Run With API Key
 
 ```bash
