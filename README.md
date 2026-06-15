@@ -2,7 +2,7 @@
 
 Small Docker wrapper for the OpenAI Codex CLI.
 
-The image installs the standalone Codex CLI at build time, then runs it as an unprivileged `codex` user from `/workspace`. Credentials and Codex state are runtime concerns: mount them or pass environment variables when you start the container.
+The image downloads OpenAI's official standalone installer at build time, installs the Codex CLI, then runs it as an unprivileged `codex` user from `/workspace`. Credentials and Codex state are runtime concerns: mount them or pass environment variables when you start the container.
 
 ## Build
 
@@ -18,7 +18,19 @@ docker build \
   -t codex-cli:1.2.3 .
 ```
 
-`CODEX_RELEASE=latest` is the default.
+`CODEX_RELEASE=0.139.0` is the default for reproducible builds. Use `latest` when you want the installer to resolve the newest OpenAI release during the build:
+
+```bash
+docker build \
+  --build-arg CODEX_RELEASE=latest \
+  -t codex-cli:latest .
+```
+
+Docker may reuse the cached installer layer on repeated builds. Force a fresh download from OpenAI when you want the latest installer and release resolution. This also means the build will depend on GitHub release API availability because OpenAI's installer verifies release assets there:
+
+```bash
+docker build --pull --no-cache -t codex-cli:local .
+```
 
 ## Run With Local Codex State
 

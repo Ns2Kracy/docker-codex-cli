@@ -4,7 +4,7 @@
 
 **Goal:** Build a small Docker wrapper for the Codex CLI with runtime support for mounted state, API-key auth, and `OPENAI_BASE_URL`.
 
-**Architecture:** Use an Alpine multi-stage Docker build. The builder runs the Codex standalone installer, and the runtime image copies only the installed package plus a small entrypoint that sets defaults and maps Docker-friendly environment variables to Codex CLI configuration.
+**Architecture:** Use an Alpine multi-stage Docker build. The builder downloads and runs OpenAI's official Codex standalone installer with a pinned default Codex release for reproducibility, and the runtime image copies only the installed package plus a small entrypoint that sets defaults and maps Docker-friendly environment variables to Codex CLI configuration.
 
 **Tech Stack:** Docker, Alpine Linux, POSIX shell, Codex standalone installer.
 
@@ -13,26 +13,21 @@
 ### Task 1: Add Docker Build Inputs
 
 **Files:**
-- Create: `install.sh`
 - Create: `.dockerignore`
 - Create: `Dockerfile`
 
-**Step 1: Copy installer**
-
-Copy the provided Codex standalone installer into `install.sh` unchanged.
-
-**Step 2: Add `.dockerignore`**
+**Step 1: Add `.dockerignore`**
 
 Exclude git metadata, local Codex state, dotenv files, logs, and temporary files.
 
-**Step 3: Add `Dockerfile`**
+**Step 2: Add `Dockerfile`**
 
 Use Alpine multi-stage build:
 
-- `builder`: install `ca-certificates`, `curl`, `tar`, `gzip`, and run `install.sh` with `CODEX_NON_INTERACTIVE=1`, `CODEX_INSTALL_DIR=/usr/local/bin`, and `CODEX_HOME=/opt/codex`.
-- `runtime`: install `ca-certificates`, `git`, and `bash`; copy `/opt/codex` and `/usr/local/bin/codex`; create unprivileged `codex` user; set `WORKDIR /workspace`; install the entrypoint.
+- `builder`: install `ca-certificates`, `curl`, `tar`, `gzip`; download `https://chatgpt.com/codex/install.sh`; run it with `CODEX_NON_INTERACTIVE=1`, `CODEX_INSTALL_DIR=/usr/local/bin`, and `CODEX_HOME=/opt/codex`.
+- `runtime`: install `ca-certificates`, `git`, and `bash`; copy `/opt/codex`; symlink `/usr/local/bin/codex` to the installed standalone binary; create unprivileged `codex` user; set `WORKDIR /workspace`; install the entrypoint.
 
-**Step 4: Verify syntax surface**
+**Step 3: Verify syntax surface**
 
 Run: `docker build --help >/dev/null`
 

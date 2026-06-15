@@ -18,7 +18,7 @@ The current Codex manual documents `CODEX_HOME` as the root for CLI state, inclu
 
 ## Architecture
 
-Use a multi-stage Alpine image. The builder stage installs the Codex standalone package using the provided installer. The runtime stage copies only the installed Codex package, the visible `codex` command, and a small entrypoint script. Runtime dependencies are limited to certificates, git, bash, and a few standard shell utilities already provided by Alpine.
+Use a multi-stage Alpine image. The builder stage downloads OpenAI's official standalone installer from `https://chatgpt.com/codex/install.sh` and installs the Codex standalone package. The Dockerfile defaults to a pinned Codex release for reproducible builds, while still allowing `--build-arg CODEX_RELEASE=latest` or any supported version. The runtime stage copies only the installed Codex package and a small entrypoint script. Runtime dependencies are limited to certificates, git, bash, and a few standard shell utilities already provided by Alpine.
 
 The container runs as an unprivileged `codex` user with `/workspace` as the default working directory and `/home/codex/.codex` as the default `CODEX_HOME`.
 
@@ -36,7 +36,6 @@ The container runs as an unprivileged `codex` user with `/workspace` as the defa
 - `docker-entrypoint.sh`: runtime defaults and environment-to-config translation.
 - `.dockerignore`: keep local state and secrets out of Docker build context.
 - `README.md`: build and run examples.
-- `install.sh`: local copy of the provided standalone installer.
 
 ## Verification
 
