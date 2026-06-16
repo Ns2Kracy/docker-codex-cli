@@ -6,11 +6,19 @@ The image downloads OpenAI's official standalone installer at build time, instal
 
 ## Build
 
+The default Codex CLI release is defined in `codex-release.env`:
+
+```env
+CODEX_RELEASE=...
+```
+
+Change that one file to update the default release used by Docker builds, Docker Compose, and the publish workflow.
+
 ```bash
 docker build -t codex-cli:local .
 ```
 
-Pin a specific Codex release when needed:
+Override the release for a one-off build when needed:
 
 ```bash
 docker build \
@@ -18,7 +26,7 @@ docker build \
   -t codex-cli:1.2.3 .
 ```
 
-`CODEX_RELEASE=0.139.0` is the default for reproducible builds. Use `latest` when you want the installer to resolve the newest OpenAI release during the build:
+Use `latest` when you want the installer to resolve the newest OpenAI release during the build:
 
 ```bash
 docker build \
@@ -76,12 +84,12 @@ Run a one-off Codex command:
 docker compose run --rm codex --version
 ```
 
-The Compose service mounts the current directory to `/workspace` and `${HOME}/.codex` to `/home/codex/.codex` by default. Override paths or release settings with environment variables:
+The Compose service mounts the current directory to `/workspace` and `${HOME}/.codex` to `/home/codex/.codex` by default. Override paths or the release for a one-off run with environment variables:
 
 ```bash
 WORKSPACE=/path/to/project \
 CODEX_HOME_HOST="$HOME/.codex" \
-CODEX_RELEASE=0.139.0 \
+CODEX_RELEASE=latest \
 docker compose run --rm codex
 ```
 
@@ -103,7 +111,7 @@ Optional repository variable:
 
 - `DOCKERHUB_IMAGE`, for example `ns2kracy/docker-codex-cli`
 
-The workflow publishes multi-architecture images for `linux/amd64` and `linux/arm64`. It uses `CODEX_RELEASE=0.139.0` by default. For a manual run, set the `codex_release` input to another version or `latest`.
+The workflow publishes multi-architecture images for `linux/amd64` and `linux/arm64`. It reads the default Codex release from `codex-release.env`. For a manual run, set the `codex_release` input to another version or `latest`.
 
 ## Run With API Key
 

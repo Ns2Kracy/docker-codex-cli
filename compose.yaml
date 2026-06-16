@@ -4,7 +4,7 @@ x-codex-base: &codex-base
   build:
     context: .
     args:
-      CODEX_RELEASE: ${CODEX_RELEASE:-0.139.0}
+      CODEX_RELEASE: ${CODEX_RELEASE:-}
   image: ${CODEX_IMAGE:-codex-cli:local}
   working_dir: /workspace
   stdin_open: true

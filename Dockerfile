@@ -2,11 +2,17 @@ ARG ALPINE_VERSION=3.22
 
 FROM alpine:${ALPINE_VERSION} AS builder
 
-ARG CODEX_RELEASE=0.139.0
+ARG CODEX_RELEASE
 
 RUN apk add --no-cache ca-certificates curl gzip tar
 
+COPY codex-release.env /tmp/codex-release.env
+
 RUN curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/install.sh \
+    && requested_release="${CODEX_RELEASE:-}" \
+    && . /tmp/codex-release.env \
+    && CODEX_RELEASE="${requested_release:-$CODEX_RELEASE}" \
+    && test -n "$CODEX_RELEASE" \
     && CODEX_NON_INTERACTIVE=1 \
     CODEX_RELEASE="${CODEX_RELEASE}" \
     CODEX_INSTALL_DIR=/usr/local/bin \

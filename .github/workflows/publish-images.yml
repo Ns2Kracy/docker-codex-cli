@@ -6,7 +6,7 @@ on:
       codex_release:
         description: Codex CLI release to install in the image
         required: false
-        default: 0.139.0
+        default: ''
   push:
     branches:
       - main
@@ -14,7 +14,6 @@ on:
       - 'v*'
 
 env:
-  CODEX_RELEASE: ${{ inputs.codex_release || '0.139.0' }}
   GHCR_IMAGE: ghcr.io/${{ github.repository }}
   DOCKERHUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE || github.repository }}
 
@@ -28,6 +27,20 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Resolve Codex release
+        id: codex-release
+        env:
+          INPUT_CODEX_RELEASE: ${{ inputs.codex_release }}
+        run: |
+          set -eu
+          . ./codex-release.env
+          if [ -n "${INPUT_CODEX_RELEASE:-}" ]; then
+            CODEX_RELEASE="$INPUT_CODEX_RELEASE"
+          fi
+          test -n "${CODEX_RELEASE:-}" || { echo 'CODEX_RELEASE is empty'; exit 1; }
+          echo "CODEX_RELEASE=$CODEX_RELEASE" >> "$GITHUB_ENV"
+          echo "codex_release=$CODEX_RELEASE" >> "$GITHUB_OUTPUT"
 
       - name: Check Docker Hub credentials
         env:
@@ -68,7 +81,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=codex-${{ env.CODEX_RELEASE }}
+            type=raw,value=codex-${{ steps.codex-release.outputs.codex_release }}
             type=sha,prefix=sha-
 
       - name: Build and push image
@@ -78,6 +91,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: |
-            CODEX_RELEASE=${{ env.CODEX_RELEASE }}
+            CODEX_RELEASE=${{ steps.codex-release.outputs.codex_release }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
